@@ -1,11 +1,10 @@
 'use client';
-
 import dynamic from 'next/dynamic';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const QRCode = dynamic(() => import('qrcode.react'), { ssr: false });
 
-export default function Home() {
+export default function GameshiftDemo() {
   const [qrValue, setQrValue] = useState('');
   const [sessionId, setSessionId] = useState('');
 
@@ -16,20 +15,39 @@ export default function Home() {
     setQrValue(url);
   };
 
+  useEffect(() => {
+    generateQR();
+  }, []);
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <h1 className="text-4xl font-bold mb-8">GameShift Demo</h1>
-      <button
-        onClick={generateQR}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
-      >
-        Generate QR Code
-      </button>
-      {qrValue && (
-        <div className="mt-4 mb-4">
-          <QRCode value={qrValue} size={256} />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-purple-700 to-purple-900">
+      <div className="bg-white p-8 rounded-2xl shadow-2xl text-center w-96">
+        <div className="mb-8">
+          {/* <img
+            src="/api/placeholder/300/80"
+            alt="Gameshift Logo"
+            className="w-full"
+          /> */}
+          <p className="text-sm text-gray-600 mt-2">BY SOLANA LABS</p>
         </div>
-      )}
+
+        {qrValue && (
+          <div className="mb-6 bg-purple-100 p-4 rounded-xl">
+            <QRCode value={qrValue} size={200} />
+          </div>
+        )}
+
+        <button
+          onClick={generateQR}
+          className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-full transition duration-300 flex items-center justify-center w-full"
+        >
+          Generate New QR Code
+        </button>
+
+        <div className="mt-6 text-sm text-gray-600">
+          Scan the QR code to connect your wallet
+        </div>
+      </div>
     </div>
   );
 }
