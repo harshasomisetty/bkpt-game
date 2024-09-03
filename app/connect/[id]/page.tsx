@@ -1,43 +1,44 @@
 'use client';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export default function Connect({ params }: { params: { id: string } }) {
   const { id } = params;
   const { connected, publicKey } = useWallet();
-  const [connectedWallets, setConnectedWallets] = useState<string[]>([]);
-  const [activeWallet, setActiveWallet] = useState<string | null>(null);
   const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (connected && publicKey) {
-      const newWallet = publicKey.toBase58();
-      fetch('/api/connect-wallet', {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!connected || !publicKey || !email) {
+      console.error('Wallet not connected or email not provided');
+      return;
+    }
+
+    setIsLoading(true);
+    const newWallet = publicKey.toBase58();
+
+    try {
+      const response = await fetch('/api/connect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId: id, wallet: newWallet }),
-      })
-        .then((response) => response.json())
-        .then(() => fetchSessionData())
-        .catch((error) => console.error('Error:', error));
+        body: JSON.stringify({ sessionId: id, wallet: newWallet, email }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to connect wallet');
+      }
+
+      const data = await response.json();
+      console.log('Login successful:', data);
+      // Handle successful login (e.g., redirect or update UI)
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle error (e.g., show error message to user)
+    } finally {
+      setIsLoading(false);
     }
-  }, [connected, publicKey, id]);
-
-  const fetchSessionData = () => {
-    fetch(`/api/check-session/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setConnectedWallets(data.connectedWallets || []);
-        setActiveWallet(data.activeWallet);
-      })
-      .catch((error) => console.error('Error:', error));
-  };
-
-  const handleEmailSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle email submission here
-    console.log('Email submitted:', email);
   };
 
   return (
@@ -47,43 +48,28 @@ export default function Connect({ params }: { params: { id: string } }) {
           Connect Your Wallet
         </h1>
 
-        <form onSubmit={handleEmailSubmit} className="mb-6">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
-            placeholder="Enter your email"
-            required
-          />
-          <button
-            type="submit"
-            className="w-full bg-purple-600 text-white font-bold py-2 px-4 rounded-md hover:bg-purple-700 transition duration-300 mb-4"
-          >
-            Submit Email
-          </button>
-        </form>
+        <div className="mb-6">
+          <WalletMultiButton className="w-full bg-purple-600 text-white font-bold py-2 px-4 rounded-md hover:bg-purple-700 transition duration-300" />
+        </div>
 
-        <WalletMultiButton className="w-full bg-purple-600 text-white font-bold py-2 px-4 rounded-md hover:bg-purple-700 transition duration-300 mb-6" />
-
-        {connectedWallets.length > 0 && (
-          <div className="mt-4">
-            <h2 className="text-2xl font-bold mb-4 text-purple-800">
-              Connected Wallets
-            </h2>
-            {connectedWallets.map((wallet) => (
-              <div key={wallet} className="mb-2 p-2 bg-purple-100 rounded-md">
-                <span className="font-medium">
-                  {wallet.slice(0, 6)}...{wallet.slice(-4)}
-                </span>
-                {wallet === activeWallet && (
-                  <span className="ml-4 text-green-500 font-bold">
-                    (Active)
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
+        {connected && (
+          <form onSubmit={handleLogin} className="space-y-4">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              placeholder="Enter your email"
+              required
+            />
+            <button
+              type="submit"
+              className="w-full bg-purple-600 text-white font-bold py-2 px-4 rounded-md hover:bg-purple-700 transition duration-300 disabled:bg-purple-400"
+              disabled={isLoading || !email}
+            >
+              {isLoading ? 'Logging in...' : 'Login'}
+            </button>
+          </form>
         )}
 
         <div className="mt-6 text-center">
