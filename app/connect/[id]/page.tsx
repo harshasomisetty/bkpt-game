@@ -43,61 +43,42 @@ export default function Connect({ params }: { params: { id: string } }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-800 to-slate-900 flex flex-col items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
-        <div className="flex flex-col mb-6 border">
-          <Image
-            src="/red-runner.svg"
-            className="border border-black"
-            alt="Red Runner"
-            width={200}
-            height={80}
-          />
-          <Image
-            src="/gameshift-edition.svg"
-            alt="Gameshift Edition"
-            width={150}
-            height={30}
-            className="mt-2"
-          />
-        </div>
-
-        <h1 className="text-2xl text-[#7C3AED] font-bold mb-6 text-center">
-          PLEASE CONNECT
-          <br />
-          YOUR WALLET
-        </h1>
-
-        <div className="mb-4">
-          <WalletMultiButton className="w-full bg-purple-600 text-white font-bold py-3 px-4 rounded-md hover:bg-purple-700 transition duration-300" />
-        </div>
-
-        {connected && (
-          <form onSubmit={handleLogin} className="flex space-x-2">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-              placeholder="Enter your email"
-              required
-            />
-            <button
-              type="submit"
-              className="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300 disabled:bg-gray-100 disabled:text-gray-400"
-              disabled={isLoading || !email}
-            >
-              {isLoading ? 'Logging in...' : 'Login'}
-            </button>
-          </form>
-        )}
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            Powered by <span className="font-semibold">Gameshift</span>
-          </p>
-        </div>
+    <div className="min-h-screen flex flex-col items-center justify-start p-10">
+      <div className="flex flex-col items-center mb-6">
+        <Image src="/red-runner.svg" alt="Red Runner" width={200} height={80} />
+        <Image
+          src="/gameshift-edition.svg"
+          alt="Gameshift Edition"
+          width={150}
+          height={30}
+          className="mt-2"
+        />
       </div>
+      <h1 className="text-2xl text-[#7C3AED] font-integral font-bold mb-6 text-center uppercase">
+        Please Connect Your Wallet
+      </h1>
+      <form
+        onSubmit={handleLogin}
+        className="flex flex-col items-center space-y-4 w-full max-w-sm p-4"
+      >
+        <WalletMultiButton className="w-full bg-purple-600 text-white font-bold py-3 px-4 rounded-md hover:bg-purple-700 transition duration-300" />
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-black"
+          placeholder="Enter your email"
+          required
+          autoComplete="email"
+        />
+        <button
+          type="submit"
+          className="w-full bg-purple-600 text-white font-bold py-3 px-4 rounded-md hover:bg-purple-700 transition duration-300 disabled:bg-purple-400 disabled:cursor-not-allowed"
+          disabled={isLoading || !email || !connected}
+        >
+          {isLoading ? 'Logging in...' : 'Login'}
+        </button>
+      </form>
     </div>
   );
 }

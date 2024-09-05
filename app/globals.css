@@ -31,3 +31,19 @@ body {
     text-wrap: balance;
   }
 }
+
+@font-face {
+  font-family: 'Integral CF';
+  src: url('/fonts/IntegralCF-Bold.woff2') format('woff2'),
+    url('/fonts/IntegralCF-Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Add this to your existing Tailwind directives */
+@layer base {
+  html {
+    font-family: 'Integral CF', system-ui, sans-serif;
+  }
+}
