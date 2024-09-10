@@ -1,13 +1,21 @@
 'use client';
 
-export default function GameshiftDemo() {
+import Link from 'next/link';
+import LeaderboardDisplay from './components/LeaderboardDisplay';
+
+export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen w-full">
-      <div className="bg-white/90 p-8 rounded-2xl shadow-2xl text-center w-96">
-        <div className="mb-8">
-          <p className="text-sm text-gray-600 mt-2">BY SOLANA LABS</p>
-        </div>
-      </div>
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold text-purple-700 mb-6">
+        Red Runner Leaderboard
+      </h1>
+      <Link
+        href="/profile"
+        className="inline-block bg-purple-600 text-white font-bold py-2 px-4 rounded-md hover:bg-purple-700 transition duration-300 mb-6"
+      >
+        View Profile
+      </Link>
+      <LeaderboardDisplay />
     </div>
   );
 }
