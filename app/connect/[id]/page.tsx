@@ -25,7 +25,7 @@ export default function Page({ params }: { params: { id: string } }) {
                 WELCOME, {user.name.toUpperCase()}!
               </h1>
               <p className="text-gray-600 mb-6 text-center">
-                You are connected to Gameshift.
+                You are already connected to Gameshift.
               </p>
               <div className="flex flex-col space-y-4">
                 <ConnectButton sessionId={params.id} user={user} />

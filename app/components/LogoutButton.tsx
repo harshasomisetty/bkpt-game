@@ -2,23 +2,26 @@
 
 import { useUser } from '@/app/hooks/useUser';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { useRouter } from 'next/navigation';
 
 interface LogoutButtonProps {
   className?: string;
 }
 
 export default function LogoutButton({ className = '' }: LogoutButtonProps) {
-  const { logout } = useUser();
+  const { logout, refetch } = useUser();
   const { disconnect } = useWallet();
-  const router = useRouter();
 
   const handleLogout = async () => {
     try {
       await disconnect();
-      //   await fetch('/api/logout', { method: 'POST' });
-      logout();
-      router.push('/');
+
+      await logout();
+
+      localStorage.clear();
+
+      refetch();
+
+      window.location.reload();
     } catch (error) {
       console.error('Logout error:', error);
     }

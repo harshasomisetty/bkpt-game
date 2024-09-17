@@ -4,6 +4,8 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import LogoutButton from './LogoutButton';
+import Profile from './Profile';
 
 export default function Login({ sessionId }: { sessionId?: string }) {
   const { connected, publicKey, disconnect } = useWallet();
@@ -36,10 +38,10 @@ export default function Login({ sessionId }: { sessionId?: string }) {
         body: JSON.stringify(body),
       });
       const data = await response.json();
+
       if (!response.ok) {
         throw new Error(data.error || 'Failed to connect wallet');
       }
-      console.log('Full login response:', data);
       await refetch(); // Refetch user data after successful login
       setIsFinished(true);
     } catch (error) {
@@ -52,45 +54,30 @@ export default function Login({ sessionId }: { sessionId?: string }) {
     }
   };
 
-  const handleLogout = async () => {
-    console.log('handle');
-    try {
-      await disconnect();
-      console.log('disconnn');
-      //   await fetch('/api/logout', { method: 'POST' });
-      logout();
-      setIsFinished(false);
-      router.push('/');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
-
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  if (isFinished || user) {
-    return (
-      <div className="text-center">
-        <h1 className="text-2xl text-[#7C3AED] font-integral font-bold mb-6 uppercase">
-          Welcome, {user?.name || 'User'}!
-        </h1>
-        <p className="text-lg text-gray-700 mb-4">
-          You are connected to Gameshift.
-        </p>
-        <button
-          onClick={handleLogout}
-          className="bg-purple-600 text-white font-bold py-2 px-4 rounded-md hover:bg-purple-700 transition duration-300"
-        >
-          Logout
-        </button>
-      </div>
-    );
+  if (user) {
+    if (sessionId) {
+      return (
+        <div className="text-center">
+          <h1 className="text-2xl text-[#7C3AED] font-integral font-bold mb-6 uppercase">
+            Welcome, {user?.name || 'User'}!
+          </h1>
+          <p className="text-lg text-gray-700 mb-4">
+            You are connected to Gameshift.
+          </p>
+          <LogoutButton className="mt-4" />
+        </div>
+      );
+    } else {
+      return <Profile user={user} />;
+    }
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start p-10 border">
+    <div className="flex flex-col items-center justify-start p-10 border">
       <h1 className="text-2xl text-[#7C3AED] font-integral font-bold mb-6 text-center uppercase">
         {connected ? 'Please Add Your Email' : 'Please Connect Your Wallet'}
       </h1>

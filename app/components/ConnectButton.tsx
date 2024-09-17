@@ -11,17 +11,26 @@ interface ConnectButtonProps {
 
 export default function ConnectButton({ sessionId, user }: ConnectButtonProps) {
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
   const router = useRouter();
 
   const handleConnect = async () => {
     setIsConnecting(true);
     try {
-      const response = await fetch('/api/connect-session', {
+      if (!user.walletId) {
+        throw new Error('User wallet not found');
+      }
+
+      const response = await fetch('/api/connect', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ sessionId }),
+        body: JSON.stringify({
+          sessionId: sessionId,
+          wallet: user.walletId,
+          email: user.email,
+        }),
       });
 
       if (!response.ok) {
@@ -32,7 +41,7 @@ export default function ConnectButton({ sessionId, user }: ConnectButtonProps) {
 
       if (result.success) {
         console.log('Successfully connected');
-        router.push('/game'); // Adjust this to your game route
+        setIsConnected(true);
       } else {
         throw new Error(result.error || 'Failed to connect');
       }
@@ -43,6 +52,14 @@ export default function ConnectButton({ sessionId, user }: ConnectButtonProps) {
       setIsConnecting(false);
     }
   };
+
+  if (isConnected) {
+    return (
+      <p className="text-green-600 font-bold text-center">
+        You have been connected to Red Runner!
+      </p>
+    );
+  }
 
   return (
     <button

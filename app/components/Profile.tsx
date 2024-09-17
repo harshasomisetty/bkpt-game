@@ -1,27 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useUser } from '../hooks/useUser';
+import { User } from '../hooks/useUser';
+import LogoutButton from './LogoutButton';
 
-export default function Profile() {
-  const { user, loading } = useUser();
+interface ProfileProps {
+  user: User;
+}
 
-  useEffect(() => {
-    console.log('User state:', { user, loading });
-  }, [user, loading]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!user) {
-    return (
-      <div className="bg-white shadow-md rounded-lg p-6 mt-4">
-        <p className="text-gray-600">Not logged in</p>
-      </div>
-    );
-  }
-
+export default function Profile({ user }: ProfileProps) {
   return (
     <div className="bg-white shadow-md rounded-lg p-6 mt-4 text-black border border-fuchsia-400">
       <div className="space-y-2">
@@ -58,6 +44,7 @@ export default function Profile() {
           </p>
         )}
       </div>
+      <LogoutButton className="mt-4" />
     </div>
   );
 }

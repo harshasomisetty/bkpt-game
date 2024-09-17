@@ -12,23 +12,24 @@ export interface User {
 }
 
 export function useUser() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState<{
+    user: User | null;
+    loading: boolean;
+  }>({ user: null, loading: true });
 
   const fetchUser = useCallback(() => {
     const userCookie = getCookie('user');
     if (userCookie) {
       try {
         const userData = JSON.parse(userCookie as string);
-        setUser(userData);
+        setUserData({ user: userData, loading: false });
       } catch (error) {
         console.error('Error parsing user cookie:', error);
-        setUser(null);
+        setUserData({ user: null, loading: false });
       }
     } else {
-      setUser(null);
+      setUserData({ user: null, loading: false });
     }
-    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -40,18 +41,24 @@ export function useUser() {
   }, [fetchUser]);
 
   const updateUser = useCallback((newUserData: User) => {
-    setUser(newUserData);
+    setUserData({ user: newUserData, loading: false });
     setCookie('user', JSON.stringify(newUserData), {
       maxAge: 60 * 60 * 24 * 7, // 1 week
       path: '/',
     });
   }, []);
 
-  const logout = useCallback(() => {
-    setUser(null);
+  const logout = useCallback(async () => {
+    setUserData({ user: null, loading: false });
     deleteCookie('user');
     deleteCookie('token');
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }, []);
 
-  return { user, loading, refetch, updateUser, logout };
+  return {
+    ...userData,
+    refetch,
+    updateUser,
+    logout,
+  };
 }
