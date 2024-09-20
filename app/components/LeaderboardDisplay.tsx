@@ -44,51 +44,22 @@ export default function LeaderboardDisplay() {
     leaderboard.findIndex((entry) => entry.userId === user?.userId) + 1;
 
   return (
-    <div className="text-black">
-      {userRank > 0 && (
-        <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4">
-          <p className="font-bold">Congratulations!</p>
-          <p>You&apos;re ranked #{userRank} on the leaderboard!</p>
+    <div className="p-4 rounded-lg text-black bg-sky-200/80">
+      <div className="grid grid-cols-12 gap-4 mb-4 font-bold text-xl">
+        <div className="col-span-2">Rank</div>
+        <div className="col-span-7">Username</div>
+        <div className="col-span-3 text-right">Distance</div>
+      </div>
+      {leaderboard.map((entry, index) => (
+        <div
+          key={entry.userId}
+          className="grid grid-cols-12 gap-4 items-center p-2 mb-2 rounded-lg"
+        >
+          <div className="col-span-2 text-2xl">{index + 1}</div>
+          <div className="col-span-7">{entry.name}</div>
+          <div className="col-span-3 text-right">{entry.score} m</div>
         </div>
-      )}
-      <h2 className="text-2xl font-bold mb-4">Leaderboard</h2>
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-purple-100">
-            <th className="p-2 border">Rank</th>
-            <th className="p-2 border">UserId</th>
-            <th className="p-2 border">Name</th>
-            <th className="p-2 border">Score</th>
-            <th className="p-2 border">Created At</th>
-            <th className="p-2 border">Updated At</th>
-          </tr>
-        </thead>
-        <tbody>
-          {leaderboard.map((entry, index) => (
-            <tr
-              key={entry.userId}
-              className={`${
-                entry.userId === user?.userId
-                  ? 'bg-yellow-200'
-                  : index % 2 === 0
-                  ? 'bg-white'
-                  : 'bg-gray-50'
-              }`}
-            >
-              <td className="p-2 border">{index + 1}</td>
-              <td className="p-2 border">{entry.userId}</td>
-              <td className="p-2 border">{entry.name}</td>
-              <td className="p-2 border">{entry.score}</td>
-              <td className="p-2 border">
-                {new Date(entry.createdAt).toLocaleString()}
-              </td>
-              <td className="p-2 border">
-                {new Date(entry.updatedAt).toLocaleString()}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      ))}
     </div>
   );
 }
